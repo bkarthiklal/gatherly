@@ -1,0 +1,22 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# Supply-chain control: refuse any package published less than 3 days ago.
+# Compromised-maintainer attacks (chalk/debug, event-stream, ua-parser-js)
+# are typically caught and unpublished within hours, so a short quarantine
+# blocks the blast radius at near-zero cost. Set explicitly rather than
+# relying on the pnpm default so the choice is visible and reviewable.
+#
+# Consequence: some deps are pinned one patch behind latest until they age
+# past the window. `pnpm update` moves them forward once they qualify.
+minimumReleaseAge: 4320 # minutes (3 days)
+
+# Install scripts are blocked by default — arbitrary code execution at
+# install time is a primary supply-chain attack vector. Each entry below
+# is allowed deliberately because it genuinely needs to compile or fetch
+# a platform binary.
+allowBuilds:
+  argon2: true # native addon — fetches/compiles its prebuild
+  esbuild: true # platform binary, used by tsx and Vite
+  mongodb-memory-server: true # downloads a real mongod for integration tests

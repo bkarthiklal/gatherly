@@ -1,0 +1,30 @@
+{
+  "name": "gatherly",
+  "version": "0.1.0",
+  "private": true,
+
+  "engines": {
+    "node": ">=24.0.0 <25"
+  },
+  "packageManager": "pnpm@11.20.0+sha512.9a6f330a95b66446ea088faf1521405a8a01f07fde7124cc9958dfed52d4bb436737e65b08f85f37b46fcba375092558ac51262b816844b22f63406ed166bfee",
+  "scripts": {
+    "dev": "pnpm --parallel --filter \"./apps/*\" dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "pnpm -r test",
+    "test:run": "pnpm -r test:run"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.13.3",
+    "eslint": "10.8.0",
+    "globals": "^17.9.0",
+    "prettier": "^3.9.6",
+    "typescript": "6.0.3",
+    "typescript-eslint": "^8.66.0"
+  }
+}

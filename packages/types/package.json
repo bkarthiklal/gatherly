@@ -1,0 +1,24 @@
+{
+  "name": "@gatherly/types",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsc -b --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  }
+}

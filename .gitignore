@@ -1,0 +1,22 @@
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Environment — .env.example IS committed, real .env files never are.
+.env
+.env.*
+!.env.example
+
+.DS_Store
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Generated ticket PDFs / QR assets during local dev
+apps/api/tmp/

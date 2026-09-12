@@ -48,6 +48,8 @@ export const ticketTierSchema = createTicketTierSchema.extend({
   quantityHeld: z.int().nonnegative(),
   /** Derived: total − sold − held. What a buyer can actually claim right now. */
   quantityAvailable: z.int().nonnegative(),
+  /** True when inside the sales window and stock remains. */
+  onSale: z.boolean(),
 });
 export type TicketTier = z.infer<typeof ticketTierSchema>;
 
@@ -107,3 +109,75 @@ export const listEventsQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
 });
 export type ListEventsQuery = z.infer<typeof listEventsQuerySchema>;
+
+/**
+ * Fields an organiser may change after creation. Structural fields (dates,
+ * venue, category) are only editable while the event is still a draft —
+ * once buyers may have seen or bought it, moving the date is a cancellation
+ * and re-list, not an edit.
+ */
+export const updateEventSchema = z
+  .object({
+    title: z.string().trim().min(4).max(140),
+    description: z.string().trim().min(20).max(5000),
+    category: eventCategorySchema,
+    venue: venueSchema,
+    startsAt: z.iso.datetime(),
+    endsAt: z.iso.datetime(),
+    bannerUrl: z.url().max(500).nullable(),
+  })
+  .partial()
+  .refine((v) => Object.keys(v).length > 0, { message: 'nothing to update' })
+  .refine((v) => !v.startsAt || !v.endsAt || new Date(v.endsAt) > new Date(v.startsAt), {
+    message: 'endsAt must be after startsAt',
+    path: ['endsAt'],
+  });
+export type UpdateEventInput = z.infer<typeof updateEventSchema>;
+
+export const updateTicketTierSchema = createTicketTierSchema
+  .omit({ currency: true })
+  .partial()
+  .refine((v) => Object.keys(v).length > 0, { message: 'nothing to update' });
+export type UpdateTicketTierInput = z.infer<typeof updateTicketTierSchema>;
+
+export const eventIdParamsSchema = z.object({ eventId: objectIdSchema });
+export const tierParamsSchema = z.object({ eventId: objectIdSchema, tierId: objectIdSchema });
+export const slugParamsSchema = z.object({
+  slug: z
+    .string()
+    .trim()
+    .min(1)
+    .max(200)
+    .regex(/^[a-z0-9-]+$/, 'invalid slug'),
+});
+
+export const rejectEventSchema = z.object({
+  reason: z.string().trim().min(5).max(500),
+});
+export type RejectEventInput = z.infer<typeof rejectEventSchema>;
+
+export const adminEventsQuerySchema = z.object({
+  status: eventStatusSchema.default('pending'),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+});
+export type AdminEventsQuery = z.infer<typeof adminEventsQuerySchema>;
+
+/** What the organiser dashboard needs beyond the public detail. */
+export const organiserEventSchema = eventDetailSchema.extend({
+  rejectionReason: z.string().nullable(),
+  createdAt: z.iso.datetime(),
+});
+export type OrganiserEvent = z.infer<typeof organiserEventSchema>;
+
+/** Parameters for a signed, direct browser-to-Cloudinary upload. */
+export const uploadSignatureSchema = z.object({
+  cloudName: z.string(),
+  apiKey: z.string(),
+  timestamp: z.int(),
+  signature: z.string(),
+  folder: z.string(),
+  allowedFormats: z.string(),
+  uploadUrl: z.url(),
+});
+export type UploadSignature = z.infer<typeof uploadSignatureSchema>;

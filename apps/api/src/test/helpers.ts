@@ -1,4 +1,4 @@
-import type { AuthResponse, UserRole } from '@gatherly/types';
+import type { AuthResponse, OrganiserEvent, UserRole } from '@gatherly/types';
 import request from 'supertest';
 import { createApp } from '../app.js';
 import { hashPassword } from '../lib/password.js';
@@ -48,4 +48,51 @@ export async function createUser(
 
 export function bearer(token: string): [string, string] {
   return ['Authorization', `Bearer ${token}`];
+}
+
+const DAY = 24 * 60 * 60 * 1000;
+
+export function eventPayload(overrides: Record<string, unknown> = {}) {
+  const startsAt = new Date(Date.now() + 30 * DAY);
+  return {
+    title: 'Indie Music Night',
+    description: 'An evening of independent artists from across the city, all ages welcome.',
+    category: 'music',
+    venue: {
+      name: 'The Blue Hall',
+      addressLine: '12 MG Road',
+      city: 'Bengaluru',
+      coordinates: [77.6, 12.97],
+    },
+    startsAt: startsAt.toISOString(),
+    endsAt: new Date(startsAt.getTime() + 4 * 60 * 60 * 1000).toISOString(),
+    tiers: [
+      { name: 'General', priceMinor: 49_900, quantityTotal: 100, perUserLimit: 4 },
+      { name: 'VIP', priceMinor: 149_900, quantityTotal: 20, perUserLimit: 2 },
+    ],
+    ...overrides,
+  };
+}
+
+/** Creates an event as the organiser and walks it to `published` through the real endpoints. */
+export async function publishedEvent(
+  organiserToken: string,
+  adminToken: string,
+  overrides: Record<string, unknown> = {},
+): Promise<OrganiserEvent> {
+  const created = await request(app)
+    .post('/api/organiser/events')
+    .set(...bearer(organiserToken))
+    .send(eventPayload(overrides))
+    .expect(201);
+  const id = (created.body as { id: string }).id;
+  await request(app)
+    .post(`/api/organiser/events/${id}/submit`)
+    .set(...bearer(organiserToken))
+    .expect(200);
+  const approved = await request(app)
+    .post(`/api/admin/events/${id}/approve`)
+    .set(...bearer(adminToken))
+    .expect(200);
+  return approved.body as OrganiserEvent;
 }

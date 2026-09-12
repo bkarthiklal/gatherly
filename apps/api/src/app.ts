@@ -4,6 +4,7 @@ import { isProduction } from './config/env.js';
 import { logger } from './lib/logger.js';
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 import { authRouter } from './routes/auth.routes.js';
+import { adminEventRouter, organiserRouter, publicEventRouter } from './routes/event.routes.js';
 import { healthRouter } from './routes/health.routes.js';
 import {
   cookies,
@@ -50,6 +51,9 @@ export function createApp(): Express {
   app.use(globalRateLimit);
 
   app.use('/api/auth', authRouter);
+  app.use('/api/events', publicEventRouter);
+  app.use('/api/organiser', organiserRouter);
+  app.use('/api/admin', adminEventRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

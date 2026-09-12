@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { type ClientSession } from 'mongoose';
 import { env } from '../config/env.js';
 import { logger } from './logger.js';
 
@@ -69,4 +69,21 @@ async function assertTransactionsSupported(): Promise<void> {
 
 export async function disconnectDb(): Promise<void> {
   await mongoose.disconnect();
+}
+
+/**
+ * Runs `fn` inside a transaction, retrying on the transient write conflicts
+ * MongoDB raises when two transactions touch the same document.
+ */
+export async function withTransaction<T>(fn: (session: ClientSession) => Promise<T>): Promise<T> {
+  const session = await mongoose.startSession();
+  try {
+    let result: T | undefined;
+    await session.withTransaction(async () => {
+      result = await fn(session);
+    });
+    return result as T;
+  } finally {
+    await session.endSession();
+  }
 }

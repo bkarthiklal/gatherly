@@ -3,7 +3,7 @@ import cors from 'cors';
 import type { CorsOptions } from 'cors';
 import mongoSanitize from '@exortek/express-mongo-sanitize';
 import type { RequestHandler } from 'express';
-import { rateLimit } from 'express-rate-limit';
+import { ipKeyGenerator, rateLimit } from 'express-rate-limit';
 import helmet from 'helmet';
 import { ERROR_CODES } from '@gatherly/types';
 import { env, isTest } from '../config/env.js';
@@ -94,11 +94,27 @@ export const globalRateLimit: RequestHandler = rateLimit({
 });
 
 /**
- * Applied to login, register and refresh. Ten attempts per quarter hour makes
- * online password guessing and user enumeration impractical while staying far
- * above what a real person does.
+ * Applied to login and register. Ten attempts per quarter hour per
+ * IP-and-email pair makes online password guessing impractical. Keying on the
+ * email as well as the IP means a room of people behind one shared Wi-Fi
+ * address (a campus, a demo) do not lock each other out.
  */
 export const authRateLimit: RequestHandler = rateLimit({
   ...baseLimiterOptions,
   limit: 10,
+  keyGenerator: (req) => {
+    const body = req.body as { email?: unknown } | undefined;
+    const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : '';
+    return `${ipKeyGenerator(req.ip ?? '')}:${email}`;
+  },
+});
+
+/**
+ * Refresh is called automatically every few minutes by every open tab, so it
+ * gets a looser ceiling than password attempts. It needs no tight limit: the
+ * token it guards is 256 random bits and cannot be guessed.
+ */
+export const refreshRateLimit: RequestHandler = rateLimit({
+  ...baseLimiterOptions,
+  limit: 60,
 });

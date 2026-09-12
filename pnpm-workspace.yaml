@@ -20,3 +20,4 @@ allowBuilds:
   argon2: true # native addon — fetches/compiles its prebuild
   esbuild: true # platform binary, used by tsx and Vite
   mongodb-memory-server: true # downloads a real mongod for integration tests
+  msgpackr-extract: false # optional native speed-up pulled in by BullMQ; msgpackr falls back to pure JS

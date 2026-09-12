@@ -3,6 +3,7 @@ import { pinoHttp } from 'pino-http';
 import { isProduction } from './config/env.js';
 import { logger } from './lib/logger.js';
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
+import { authRouter } from './routes/auth.routes.js';
 import { healthRouter } from './routes/health.routes.js';
 import {
   cookies,
@@ -48,7 +49,7 @@ export function createApp(): Express {
   app.use(healthRouter);
   app.use(globalRateLimit);
 
-  // Routes are mounted here.
+  app.use('/api/auth', authRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

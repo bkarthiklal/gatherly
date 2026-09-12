@@ -32,7 +32,10 @@ let listenersAttached = false;
  * first purchase rather than at boot. `assertTransactionsSupported` closes
  * that gap by checking at connect time.
  */
-export async function connectDb(uri: string = env.MONGODB_URI): Promise<void> {
+export async function connectDb(
+  uri: string = env.MONGODB_URI,
+  options: { dbName?: string } = {},
+): Promise<void> {
   if (!listenersAttached) {
     mongoose.connection.on('disconnected', () => logger.warn('MongoDB disconnected'));
     mongoose.connection.on('reconnected', () => logger.info('MongoDB reconnected'));
@@ -41,6 +44,7 @@ export async function connectDb(uri: string = env.MONGODB_URI): Promise<void> {
   }
 
   await mongoose.connect(uri, {
+    ...options,
     serverSelectionTimeoutMS: 10_000,
     // Money-moving writes must survive a primary failover.
     writeConcern: { w: 'majority' },

@@ -181,3 +181,22 @@ export const uploadSignatureSchema = z.object({
   uploadUrl: z.url(),
 });
 export type UploadSignature = z.infer<typeof uploadSignatureSchema>;
+
+// ─── Real-time ──────────────────────────────────────────────────────────────
+
+/** Pushed to everyone viewing an event whenever its seat counts change. */
+export const availabilityUpdateSchema = z.object({
+  eventId: objectIdSchema,
+  tiers: z.array(
+    z.object({ id: objectIdSchema, quantityAvailable: z.int().nonnegative(), onSale: z.boolean() }),
+  ),
+});
+export type AvailabilityUpdate = z.infer<typeof availabilityUpdateSchema>;
+
+export const SOCKET_EVENTS = {
+  subscribeEvent: 'event:subscribe',
+  unsubscribeEvent: 'event:unsubscribe',
+  subscribeOrganiser: 'organiser:subscribe',
+  availability: 'availability',
+  checkIn: 'check-in',
+} as const;

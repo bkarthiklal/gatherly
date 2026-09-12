@@ -7,6 +7,7 @@ import { closeRedis } from './lib/redis.js';
 import { createQueueRegistry } from './jobs/queues.js';
 import { startWorkers, type RunningWorkers } from './jobs/workers.js';
 import { registerAppModules } from './modules.js';
+import { attachRealtime } from './realtime/socket.js';
 
 /**
  * Process entrypoint: connect dependencies, then accept traffic.
@@ -24,6 +25,7 @@ async function main(): Promise<void> {
 
   const app = createApp();
   const server = createServer(app);
+  const realtime = attachRealtime(server);
 
   server.listen(env.PORT, () => {
     logger.info({ port: env.PORT, env: env.NODE_ENV }, 'API listening');
@@ -46,17 +48,19 @@ async function main(): Promise<void> {
     }, 10_000);
     force.unref();
 
-    server.close((err) => {
-      if (err) logger.error({ err }, 'Error closing HTTP server');
-      // Workers first, so no job starts against a closing database.
-      (workers ? workers.close() : Promise.resolve())
-        .then(() => registry.close())
-        .then(() => closeRedis())
-        .then(() => disconnectDb())
-        .catch((closeErr: unknown) => logger.error({ err: closeErr }, 'Error during shutdown'))
-        .finally(() => process.exit(err ? 1 : 0));
+    void realtime.close().then(() => {
+      server.close((err) => {
+        if (err) logger.error({ err }, 'Error closing HTTP server');
+        // Workers next, so no job starts against a closing database.
+        (workers ? workers.close() : Promise.resolve())
+          .then(() => registry.close())
+          .then(() => closeRedis())
+          .then(() => disconnectDb())
+          .catch((closeErr: unknown) => logger.error({ err: closeErr }, 'Error during shutdown'))
+          .finally(() => process.exit(err ? 1 : 0));
+      });
+      server.closeIdleConnections();
     });
-    server.closeIdleConnections();
   };
 
   process.on('SIGTERM', shutdown);

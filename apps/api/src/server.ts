@@ -3,6 +3,10 @@ import { createApp } from './app.js';
 import { env } from './config/env.js';
 import { connectDb, disconnectDb } from './lib/db.js';
 import { logger } from './lib/logger.js';
+import { closeRedis } from './lib/redis.js';
+import { createQueueRegistry } from './jobs/queues.js';
+import { startWorkers, type RunningWorkers } from './jobs/workers.js';
+import { registerAppModules } from './modules.js';
 
 /**
  * Process entrypoint: connect dependencies, then accept traffic.
@@ -13,6 +17,10 @@ import { logger } from './lib/logger.js';
  */
 async function main(): Promise<void> {
   await connectDb();
+
+  const registry = createQueueRegistry();
+  registerAppModules(registry);
+  const workers: RunningWorkers | null = env.RUN_WORKERS ? await startWorkers(registry) : null;
 
   const app = createApp();
   const server = createServer(app);
@@ -40,8 +48,12 @@ async function main(): Promise<void> {
 
     server.close((err) => {
       if (err) logger.error({ err }, 'Error closing HTTP server');
-      disconnectDb()
-        .catch((dbErr: unknown) => logger.error({ err: dbErr }, 'Error closing MongoDB'))
+      // Workers first, so no job starts against a closing database.
+      (workers ? workers.close() : Promise.resolve())
+        .then(() => registry.close())
+        .then(() => closeRedis())
+        .then(() => disconnectDb())
+        .catch((closeErr: unknown) => logger.error({ err: closeErr }, 'Error during shutdown'))
         .finally(() => process.exit(err ? 1 : 0));
     });
     server.closeIdleConnections();

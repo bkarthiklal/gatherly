@@ -11,7 +11,10 @@
     "test": "vitest",
     "test:run": "vitest run",
     "clean": "rm -rf dist *.tsbuildinfo",
-    "db:dev": "node scripts/dev-db.mjs"
+    "db:dev": "node scripts/dev-db.mjs",
+    "dev:worker": "tsx watch --env-file-if-exists=.env src/worker.ts",
+    "start:worker": "node dist/worker.js",
+    "load-test": "tsx scripts/load-test.ts"
   },
   "dependencies": {
     "@exortek/express-mongo-sanitize": "3.0.0",

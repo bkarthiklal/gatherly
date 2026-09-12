@@ -118,3 +118,16 @@ export const refreshRateLimit: RequestHandler = rateLimit({
   ...baseLimiterOptions,
   limit: 60,
 });
+
+/**
+ * Reservation and order creation, keyed on the signed-in user rather than
+ * the IP. Generous for a person, but it caps how fast a single account can
+ * sweep inventory into holds — the scalping pattern the per-user ticket limit
+ * alone does not stop, because holds expire and can be re-taken.
+ */
+export const purchaseRateLimit: RequestHandler = rateLimit({
+  ...baseLimiterOptions,
+  windowMs: 60 * 1000,
+  limit: 30,
+  keyGenerator: (req) => req.auth?.userId ?? ipKeyGenerator(req.ip ?? ''),
+});

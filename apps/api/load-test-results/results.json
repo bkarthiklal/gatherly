@@ -1,0 +1,425 @@
+{
+  "generatedAt": "2026-09-12T19:35:39.146Z",
+  "environment": {
+    "node": "v24.21.0",
+    "mongodb": "8.2.6 single-node replica set (mongodb-memory-server)",
+    "redis": "redis://127.0.0.1:6379",
+    "platform": "darwin/arm64"
+  },
+  "rush": {
+    "buyers": 500,
+    "seats": 100,
+    "runs": 5,
+    "results": {
+      "naive": {
+        "runs": 5,
+        "grantedMin": 500,
+        "grantedMax": 500,
+        "grantedMean": 500,
+        "oversoldMax": 400,
+        "errors": 0,
+        "durationMsMean": 149,
+        "p95MsMean": 146,
+        "raw": [
+          {
+            "granted": 500,
+            "rejected": 0,
+            "errors": 0,
+            "storedHeld": 500,
+            "activeHolds": 500,
+            "oversold": 400,
+            "durationMs": 221,
+            "p50Ms": 207,
+            "p95Ms": 217
+          },
+          {
+            "granted": 500,
+            "rejected": 0,
+            "errors": 0,
+            "storedHeld": 500,
+            "activeHolds": 500,
+            "oversold": 400,
+            "durationMs": 142,
+            "p50Ms": 128,
+            "p95Ms": 138
+          },
+          {
+            "granted": 500,
+            "rejected": 0,
+            "errors": 0,
+            "storedHeld": 500,
+            "activeHolds": 500,
+            "oversold": 400,
+            "durationMs": 132,
+            "p50Ms": 119,
+            "p95Ms": 130
+          },
+          {
+            "granted": 500,
+            "rejected": 0,
+            "errors": 0,
+            "storedHeld": 500,
+            "activeHolds": 500,
+            "oversold": 400,
+            "durationMs": 126,
+            "p50Ms": 115,
+            "p95Ms": 125
+          },
+          {
+            "granted": 500,
+            "rejected": 0,
+            "errors": 0,
+            "storedHeld": 500,
+            "activeHolds": 500,
+            "oversold": 400,
+            "durationMs": 124,
+            "p50Ms": 109,
+            "p95Ms": 122
+          }
+        ]
+      },
+      "atomic-only": {
+        "runs": 5,
+        "grantedMin": 100,
+        "grantedMax": 100,
+        "grantedMean": 100,
+        "oversoldMax": 0,
+        "errors": 0,
+        "durationMsMean": 61,
+        "p95MsMean": 59,
+        "raw": [
+          {
+            "granted": 100,
+            "rejected": 400,
+            "errors": 0,
+            "storedHeld": 100,
+            "activeHolds": 100,
+            "oversold": 0,
+            "durationMs": 70,
+            "p50Ms": 58,
+            "p95Ms": 67
+          },
+          {
+            "granted": 100,
+            "rejected": 400,
+            "errors": 0,
+            "storedHeld": 100,
+            "activeHolds": 100,
+            "oversold": 0,
+            "durationMs": 59,
+            "p50Ms": 48,
+            "p95Ms": 56
+          },
+          {
+            "granted": 100,
+            "rejected": 400,
+            "errors": 0,
+            "storedHeld": 100,
+            "activeHolds": 100,
+            "oversold": 0,
+            "durationMs": 59,
+            "p50Ms": 49,
+            "p95Ms": 58
+          },
+          {
+            "granted": 100,
+            "rejected": 400,
+            "errors": 0,
+            "storedHeld": 100,
+            "activeHolds": 100,
+            "oversold": 0,
+            "durationMs": 59,
+            "p50Ms": 47,
+            "p95Ms": 57
+          },
+          {
+            "granted": 100,
+            "rejected": 400,
+            "errors": 0,
+            "storedHeld": 100,
+            "activeHolds": 100,
+            "oversold": 0,
+            "durationMs": 57,
+            "p50Ms": 48,
+            "p95Ms": 57
+          }
+        ]
+      },
+      "gatherly": {
+        "runs": 5,
+        "grantedMin": 100,
+        "grantedMax": 100,
+        "grantedMean": 100,
+        "oversoldMax": 0,
+        "errors": 0,
+        "durationMsMean": 1759,
+        "p95MsMean": 1621,
+        "raw": [
+          {
+            "granted": 100,
+            "rejected": 400,
+            "errors": 0,
+            "storedHeld": 100,
+            "activeHolds": 100,
+            "oversold": 0,
+            "durationMs": 1780,
+            "p50Ms": 1401,
+            "p95Ms": 1642
+          },
+          {
+            "granted": 100,
+            "rejected": 400,
+            "errors": 0,
+            "storedHeld": 100,
+            "activeHolds": 100,
+            "oversold": 0,
+            "durationMs": 1906,
+            "p50Ms": 1528,
+            "p95Ms": 1800
+          },
+          {
+            "granted": 100,
+            "rejected": 400,
+            "errors": 0,
+            "storedHeld": 100,
+            "activeHolds": 100,
+            "oversold": 0,
+            "durationMs": 1763,
+            "p50Ms": 1417,
+            "p95Ms": 1652
+          },
+          {
+            "granted": 100,
+            "rejected": 400,
+            "errors": 0,
+            "storedHeld": 100,
+            "activeHolds": 100,
+            "oversold": 0,
+            "durationMs": 1701,
+            "p50Ms": 1277,
+            "p95Ms": 1514
+          },
+          {
+            "granted": 100,
+            "rejected": 400,
+            "errors": 0,
+            "storedHeld": 100,
+            "activeHolds": 100,
+            "oversold": 0,
+            "durationMs": 1645,
+            "p50Ms": 1277,
+            "p95Ms": 1495
+          }
+        ]
+      }
+    }
+  },
+  "burst": {
+    "requests": 20,
+    "perUserLimit": 4,
+    "runs": 5,
+    "results": {
+      "naive": {
+        "runs": 5,
+        "grantedMin": 20,
+        "grantedMax": 20,
+        "grantedMean": 20,
+        "oversoldMax": 0,
+        "errors": 0,
+        "durationMsMean": 13,
+        "p95MsMean": 13,
+        "raw": [
+          {
+            "granted": 20,
+            "rejected": 0,
+            "errors": 0,
+            "storedHeld": 20,
+            "activeHolds": 20,
+            "oversold": 0,
+            "durationMs": 14,
+            "p50Ms": 14,
+            "p95Ms": 14
+          },
+          {
+            "granted": 20,
+            "rejected": 0,
+            "errors": 0,
+            "storedHeld": 20,
+            "activeHolds": 20,
+            "oversold": 0,
+            "durationMs": 12,
+            "p50Ms": 12,
+            "p95Ms": 12
+          },
+          {
+            "granted": 20,
+            "rejected": 0,
+            "errors": 0,
+            "storedHeld": 20,
+            "activeHolds": 20,
+            "oversold": 0,
+            "durationMs": 12,
+            "p50Ms": 9,
+            "p95Ms": 12
+          },
+          {
+            "granted": 20,
+            "rejected": 0,
+            "errors": 0,
+            "storedHeld": 20,
+            "activeHolds": 20,
+            "oversold": 0,
+            "durationMs": 14,
+            "p50Ms": 11,
+            "p95Ms": 14
+          },
+          {
+            "granted": 20,
+            "rejected": 0,
+            "errors": 0,
+            "storedHeld": 20,
+            "activeHolds": 20,
+            "oversold": 0,
+            "durationMs": 13,
+            "p50Ms": 13,
+            "p95Ms": 13
+          }
+        ]
+      },
+      "atomic-only": {
+        "runs": 5,
+        "grantedMin": 20,
+        "grantedMax": 20,
+        "grantedMean": 20,
+        "oversoldMax": 0,
+        "errors": 0,
+        "durationMsMean": 12,
+        "p95MsMean": 12,
+        "raw": [
+          {
+            "granted": 20,
+            "rejected": 0,
+            "errors": 0,
+            "storedHeld": 20,
+            "activeHolds": 20,
+            "oversold": 0,
+            "durationMs": 11,
+            "p50Ms": 11,
+            "p95Ms": 11
+          },
+          {
+            "granted": 20,
+            "rejected": 0,
+            "errors": 0,
+            "storedHeld": 20,
+            "activeHolds": 20,
+            "oversold": 0,
+            "durationMs": 12,
+            "p50Ms": 9,
+            "p95Ms": 12
+          },
+          {
+            "granted": 20,
+            "rejected": 0,
+            "errors": 0,
+            "storedHeld": 20,
+            "activeHolds": 20,
+            "oversold": 0,
+            "durationMs": 12,
+            "p50Ms": 9,
+            "p95Ms": 12
+          },
+          {
+            "granted": 20,
+            "rejected": 0,
+            "errors": 0,
+            "storedHeld": 20,
+            "activeHolds": 20,
+            "oversold": 0,
+            "durationMs": 12,
+            "p50Ms": 9,
+            "p95Ms": 12
+          },
+          {
+            "granted": 20,
+            "rejected": 0,
+            "errors": 0,
+            "storedHeld": 20,
+            "activeHolds": 20,
+            "oversold": 0,
+            "durationMs": 14,
+            "p50Ms": 11,
+            "p95Ms": 14
+          }
+        ]
+      },
+      "gatherly": {
+        "runs": 5,
+        "grantedMin": 4,
+        "grantedMax": 4,
+        "grantedMean": 4,
+        "oversoldMax": 0,
+        "errors": 0,
+        "durationMsMean": 512,
+        "p95MsMean": 512,
+        "raw": [
+          {
+            "granted": 4,
+            "rejected": 16,
+            "errors": 0,
+            "storedHeld": 4,
+            "activeHolds": 4,
+            "oversold": 0,
+            "durationMs": 483,
+            "p50Ms": 74,
+            "p95Ms": 483
+          },
+          {
+            "granted": 4,
+            "rejected": 16,
+            "errors": 0,
+            "storedHeld": 4,
+            "activeHolds": 4,
+            "oversold": 0,
+            "durationMs": 461,
+            "p50Ms": 71,
+            "p95Ms": 461
+          },
+          {
+            "granted": 4,
+            "rejected": 16,
+            "errors": 0,
+            "storedHeld": 4,
+            "activeHolds": 4,
+            "oversold": 0,
+            "durationMs": 673,
+            "p50Ms": 133,
+            "p95Ms": 673
+          },
+          {
+            "granted": 4,
+            "rejected": 16,
+            "errors": 0,
+            "storedHeld": 4,
+            "activeHolds": 4,
+            "oversold": 0,
+            "durationMs": 474,
+            "p50Ms": 139,
+            "p95Ms": 474
+          },
+          {
+            "granted": 4,
+            "rejected": 16,
+            "errors": 0,
+            "storedHeld": 4,
+            "activeHolds": 4,
+            "oversold": 0,
+            "durationMs": 471,
+            "p50Ms": 131,
+            "p95Ms": 471
+          }
+        ]
+      }
+    }
+  }
+}

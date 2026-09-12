@@ -96,3 +96,54 @@ export async function publishedEvent(
     .expect(200);
   return approved.body as OrganiserEvent;
 }
+
+/** Inserts a published event with one tier straight into the database — for tests about inventory, not moderation. */
+export async function seedPublishedTier(
+  tier: Partial<{ quantityTotal: number; perUserLimit: number; priceMinor: number }> = {},
+): Promise<{ eventId: string; tierId: string; organiserId: string }> {
+  const { EventModel } = await import('../models/event.model.js');
+  const { TicketTierModel } = await import('../models/ticket-tier.model.js');
+  const organiser = await createUser('organiser');
+  const startsAt = new Date(Date.now() + 30 * DAY);
+  const event = await EventModel.create({
+    organiserId: organiser.id,
+    title: 'Load Test Live',
+    slug: `load-test-${Math.random().toString(36).slice(2, 8)}`,
+    description: 'Seeded directly for inventory tests with enough description.',
+    category: 'music',
+    venue: { name: 'Arena', addressLine: '1 Stadium Road', city: 'Pune', cityKey: 'pune' },
+    startsAt,
+    endsAt: new Date(startsAt.getTime() + 3 * 60 * 60 * 1000),
+    status: 'published',
+    publishedAt: new Date(),
+  });
+  const created = await TicketTierModel.create({
+    eventId: event._id,
+    name: 'General',
+    priceMinor: tier.priceMinor ?? 50_000,
+    quantityTotal: tier.quantityTotal ?? 100,
+    perUserLimit: tier.perUserLimit ?? 10,
+  });
+  return {
+    eventId: event._id.toString(),
+    tierId: created._id.toString(),
+    organiserId: organiser.id,
+  };
+}
+
+/** Many attendee identities without paying Argon2 cost for each one. */
+export async function createAttendees(
+  count: number,
+): Promise<{ userId: string; role: 'attendee' }[]> {
+  const { UserModel } = await import('../models/user.model.js');
+  const hash = await hashPassword(PASSWORD);
+  const docs = await UserModel.insertMany(
+    Array.from({ length: count }, (_, i) => ({
+      name: `Buyer ${i}`,
+      email: `buyer${i}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}@example.com`,
+      passwordHash: hash,
+      role: 'attendee',
+    })),
+  );
+  return docs.map((d) => ({ userId: d._id.toString(), role: 'attendee' as const }));
+}

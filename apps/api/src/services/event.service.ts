@@ -15,6 +15,7 @@ import type {
 } from '@gatherly/types';
 import { Types, type QueryFilter } from 'mongoose';
 import { withTransaction } from '../lib/db.js';
+import { publish } from '../lib/domain-events.js';
 import { AppError } from '../lib/errors.js';
 import { assertCanManage, type AuthContext } from '../middleware/auth.js';
 import { EventModel, type Event, type EventVenue } from '../models/event.model.js';
@@ -272,7 +273,8 @@ export async function submitEvent(auth: AuthContext, eventId: string): Promise<O
 
 /**
  * Cancelling stops all sales immediately. Refunds for anyone who already
- * paid are dispatched by the payments module, which listens for this.
+ * paid are dispatched by the payments module, which subscribes to
+ * `event.cancelled`.
  */
 export async function cancelEvent(auth: AuthContext, eventId: string): Promise<OrganiserEvent> {
   const event = await loadManagedEvent(eventId, auth);
@@ -281,16 +283,8 @@ export async function cancelEvent(auth: AuthContext, eventId: string): Promise<O
     { $set: { status: 'cancelled', cancelledAt: new Date() } },
   );
   if (updated.modifiedCount === 0) throw AppError.conflict('This event is already cancelled');
-  await onEventCancelled(event._id);
+  await publish('event.cancelled', { eventId: event._id.toString() });
   return getOrganiserEvent(auth, eventId);
-}
-
-/** Hook the payments module registers to refund buyers. A no-op until then. */
-let onEventCancelled: (eventId: Types.ObjectId) => Promise<void> = () => Promise.resolve();
-export function setEventCancelledHandler(
-  handler: (eventId: Types.ObjectId) => Promise<void>,
-): void {
-  onEventCancelled = handler;
 }
 
 /** Hard delete is only for drafts with no inventory activity; anything else is cancelled instead. */

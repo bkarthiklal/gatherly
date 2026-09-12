@@ -6,6 +6,7 @@ import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 import { authRouter } from './routes/auth.routes.js';
 import { adminEventRouter, organiserRouter, publicEventRouter } from './routes/event.routes.js';
 import { healthRouter } from './routes/health.routes.js';
+import { holdRouter, orderRouter, promoRouter } from './routes/purchase.routes.js';
 import {
   cookies,
   corsMiddleware,
@@ -52,7 +53,10 @@ export function createApp(): Express {
 
   app.use('/api/auth', authRouter);
   app.use('/api/events', publicEventRouter);
+  app.use('/api/organiser/events/:eventId/promo-codes', promoRouter);
   app.use('/api/organiser', organiserRouter);
+  app.use('/api/holds', holdRouter);
+  app.use('/api/orders', orderRouter);
   app.use('/api/admin', adminEventRouter);
 
   app.use(notFoundHandler);

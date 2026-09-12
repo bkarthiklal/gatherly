@@ -22,7 +22,11 @@ export default tseslint.config(
   {
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: {
+          // Standalone scripts (load test, seed) are run by tsx and sit outside src/.
+          allowDefaultProject: ['apps/api/scripts/*.ts'],
+          defaultProject: 'tsconfig.base.json',
+        },
         tsconfigRootDir: import.meta.dirname,
       },
     },

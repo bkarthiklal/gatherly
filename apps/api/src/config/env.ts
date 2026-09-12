@@ -48,6 +48,19 @@ const envSchema = z
     CLOUDINARY_API_KEY: z.string().optional(),
     CLOUDINARY_API_SECRET: z.string().optional(),
 
+    /** How long a seat reservation lasts before it is released back to sale. */
+    HOLD_TTL_SECONDS: z.coerce.number().int().min(60).max(3600).default(480),
+    /**
+     * Run background job processors inside the API process. Render's free
+     * tier has no background-worker service type, so production defaults to
+     * one process doing both; set false when running `worker.ts` separately.
+     */
+    RUN_WORKERS: z
+      .enum(['true', 'false'])
+      .default('true')
+      .transform((v) => v === 'true'),
+    QUEUE_PREFIX: z.string().min(1).default('gatherly'),
+
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
   })
   /**

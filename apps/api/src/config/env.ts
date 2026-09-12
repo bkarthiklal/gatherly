@@ -61,6 +61,12 @@ const envSchema = z
       .transform((v) => v === 'true'),
     QUEUE_PREFIX: z.string().min(1).default('gatherly'),
 
+    /** Transactional email. Without a key, emails are written to the log instead of sent. */
+    RESEND_API_KEY: z.string().optional(),
+    EMAIL_FROM: z.string().default('Gatherly <onboarding@resend.dev>'),
+    /** Public URL of the web app, used for links inside emails. */
+    WEB_APP_URL: z.url().default('http://localhost:5173'),
+
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
   })
   /**

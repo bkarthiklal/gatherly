@@ -29,6 +29,8 @@ export interface Order {
   paidAt: Date | null;
   failureReason: string | null;
   refundedAt: Date | null;
+  /** Set once the ticket email is accepted by the provider, so a retried job does not send it twice. */
+  ticketsEmailedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -63,6 +65,7 @@ const orderSchema = new Schema<Order>(
     paidAt: { type: Date, default: null },
     failureReason: { type: String, default: null },
     refundedAt: { type: Date, default: null },
+    ticketsEmailedAt: { type: Date, default: null },
   },
   { timestamps: true },
 );

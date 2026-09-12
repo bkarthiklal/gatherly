@@ -3,10 +3,6 @@ import { pinoHttp } from 'pino-http';
 import { isProduction } from './config/env.js';
 import { logger } from './lib/logger.js';
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
-import { authRouter } from './routes/auth.routes.js';
-import { adminEventRouter, organiserRouter, publicEventRouter } from './routes/event.routes.js';
-import { healthRouter } from './routes/health.routes.js';
-import { holdRouter, orderRouter, promoRouter } from './routes/purchase.routes.js';
 import {
   cookies,
   corsMiddleware,
@@ -14,6 +10,16 @@ import {
   sanitizeRequest,
   securityHeaders,
 } from './middleware/security.js';
+import { authRouter } from './routes/auth.routes.js';
+import { adminEventRouter, organiserRouter, publicEventRouter } from './routes/event.routes.js';
+import { healthRouter } from './routes/health.routes.js';
+import {
+  checkoutRouter,
+  organiserOrderRouter,
+  ticketRouter,
+  webhookRouter,
+} from './routes/payment.routes.js';
+import { holdRouter, orderRouter, promoRouter } from './routes/purchase.routes.js';
 
 /**
  * Builds the application without binding a port, so integration tests can hand
@@ -23,11 +29,14 @@ import {
  * Middleware order is deliberate:
  *   helmet   — headers on every response, including errors raised later
  *   cors     — must answer preflight before anything can reject the request
+ *   logging  — early, so every request below is recorded
+ *   health   — before the limiter, so platform probes are never throttled
+ *   webhooks — before the JSON parser, which would consume the raw bytes the
+ *              signature is computed over; not rate-limited, since Razorpay
+ *              retries are legitimate and signatures already gate access
  *   cookies  — authentication reads them
  *   json     — body must exist before it can be sanitised
  *   sanitise — operates on the parsed body
- *   logging  — positioned so throttled requests are still recorded
- *   health   — before the limiter, so platform probes are never throttled
  *   limiter  — last gate before routes
  */
 export function createApp(): Express {
@@ -43,20 +52,24 @@ export function createApp(): Express {
 
   app.use(securityHeaders);
   app.use(corsMiddleware);
+  app.use(pinoHttp({ logger, autoLogging: { ignore: (req) => req.url === '/healthz' } }));
+  app.use(healthRouter);
+  app.use('/api/webhooks', webhookRouter);
   app.use(cookies);
   app.use(express.json({ limit: '100kb' }));
   app.use(express.urlencoded({ extended: false, limit: '100kb' }));
   app.use(sanitizeRequest);
-  app.use(pinoHttp({ logger, autoLogging: { ignore: (req) => req.url === '/healthz' } }));
-  app.use(healthRouter);
   app.use(globalRateLimit);
 
   app.use('/api/auth', authRouter);
   app.use('/api/events', publicEventRouter);
   app.use('/api/organiser/events/:eventId/promo-codes', promoRouter);
+  app.use('/api/organiser/events/:eventId/orders', organiserOrderRouter);
   app.use('/api/organiser', organiserRouter);
   app.use('/api/holds', holdRouter);
+  app.use('/api/orders', checkoutRouter);
   app.use('/api/orders', orderRouter);
+  app.use('/api/tickets', ticketRouter);
   app.use('/api/admin', adminEventRouter);
 
   app.use(notFoundHandler);

@@ -60,7 +60,10 @@ export const createEventSchema = z
     startsAt: z.iso.datetime(),
     endsAt: z.iso.datetime(),
     bannerUrl: z.url().max(500).optional(),
-    tiers: z.array(createTicketTierSchema).min(1, 'an event needs at least one ticket tier').max(10),
+    tiers: z
+      .array(createTicketTierSchema)
+      .min(1, 'an event needs at least one ticket tier')
+      .max(10),
   })
   .refine((v) => new Date(v.endsAt) > new Date(v.startsAt), {
     message: 'endsAt must be after startsAt',

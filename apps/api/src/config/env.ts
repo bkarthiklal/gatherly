@@ -67,6 +67,14 @@ const envSchema = z
     /** Public URL of the web app, used for links inside emails. */
     WEB_APP_URL: z.url().default('http://localhost:5173'),
 
+    /**
+     * Reverse proxies between the client and this process. Render alone is 1.
+     * With the web app's Netlify rewrite in front it is 2 (Netlify, then
+     * Render). Too low and every user shares one rate-limit bucket; too high
+     * and a client can spoof X-Forwarded-For.
+     */
+    TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(1),
+
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
   })
   /**

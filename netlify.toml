@@ -1,0 +1,28 @@
+# Netlify builds the web app from the repository root so the pnpm workspace
+# (and @gatherly/types) resolves. Set in the Netlify UI → Environment:
+#   API_ORIGIN       https://<your-api>.onrender.com   (used to write the /api proxy rule)
+#   VITE_SOCKET_URL  https://<your-api>.onrender.com   (WebSockets bypass the proxy)
+
+[build]
+  base = ""
+  publish = "apps/web/dist"
+  command = "corepack enable && corepack install && pnpm install --frozen-lockfile && pnpm --filter @gatherly/types build && pnpm --filter @gatherly/web build"
+
+[build.environment]
+  MONGOMS_DISABLE_POSTINSTALL = "1"
+
+# The /api proxy and SPA fallback live in apps/web/dist/_redirects, generated at build time.
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # The check-in scanner needs the camera on our own origin; nothing else may use it.
+    Permissions-Policy = "camera=(self), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

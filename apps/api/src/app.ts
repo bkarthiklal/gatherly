@@ -1,6 +1,6 @@
 import express, { type Express } from 'express';
 import { pinoHttp } from 'pino-http';
-import { isProduction } from './config/env.js';
+import { env, isProduction } from './config/env.js';
 import { logger } from './lib/logger.js';
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 import {
@@ -47,11 +47,12 @@ import { holdRouter, orderRouter, promoRouter } from './routes/purchase.routes.j
 export function createApp(): Express {
   const app = express();
 
-  // Render terminates TLS at its proxy. Without this, every request appears to
-  // originate from the proxy, so the rate limiter would bucket all users into
-  // one counter and `req.secure` would be false. Exactly one hop is trusted —
-  // blanket `true` lets a client forge `X-Forwarded-For` and evade the limiter.
-  if (isProduction) app.set('trust proxy', 1);
+  // Render terminates TLS at its proxy (and in production the web app's Netlify
+  // rewrite adds a second hop). Without this every request appears to come from
+  // the proxy, so the rate limiter would put all users in one bucket and
+  // `req.secure` would be false. The exact hop count is trusted — blanket `true`
+  // would let a client forge X-Forwarded-For and evade the limiter.
+  if (isProduction) app.set('trust proxy', env.TRUST_PROXY_HOPS);
 
   app.disable('x-powered-by');
 

@@ -1,0 +1,60 @@
+# Render Blueprint for the API (Dashboard → New → Blueprint → pick this repo).
+# Values marked `sync: false` are prompted for once in the dashboard and never
+# stored in git.
+services:
+  - type: web
+    name: gatherly-api
+    runtime: node
+    plan: free
+    region: singapore # closest Render region to India
+    branch: main
+    healthCheckPath: /healthz
+    # NODE_ENV=production is set below, and pnpm skips devDependencies when it
+    # sees it — which would remove the TypeScript compiler this build needs.
+    # --prod=false keeps them for the build step only.
+    buildCommand: >-
+      corepack enable && corepack install &&
+      pnpm install --frozen-lockfile --prod=false &&
+      pnpm --filter @gatherly/api build
+    startCommand: node apps/api/dist/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGOMS_DISABLE_POSTINSTALL # skip the test-only mongod download
+        value: '1'
+      - key: RUN_WORKERS # free tier has no separate worker service
+        value: 'true'
+      - key: TRUST_PROXY_HOPS # Netlify rewrite + Render proxy
+        value: '2'
+      - key: LOG_LEVEL
+        value: info
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: TICKET_SIGNING_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS # exact Netlify origin, no trailing slash
+        sync: false
+      - key: WEB_APP_URL
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        value: Gatherly <onboarding@resend.dev>

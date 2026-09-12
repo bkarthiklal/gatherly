@@ -60,6 +60,14 @@ export default tseslint.config(
     },
   },
 
+  // The web app runs in the browser.
+  {
+    files: ['apps/web/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: globals.browser,
+    },
+  },
+
   // Plain JS helper scripts sit outside every tsconfig, so type-aware rules
   // cannot run on them.
   {

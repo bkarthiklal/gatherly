@@ -8,3 +8,6 @@ build
 coverage
 node_modules
 *.tsbuildinfo
+
+# Editor/agent tooling
+.claude/

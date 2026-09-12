@@ -147,3 +147,29 @@ export async function createAttendees(
   );
   return docs.map((d) => ({ userId: d._id.toString(), role: 'attendee' as const }));
 }
+
+/** Buys `quantity` seats for a user through the real hold → order → payment path. */
+export async function buyTickets(
+  userId: string,
+  tierId: string,
+  quantity: number,
+  promoCode?: string,
+): Promise<{ orderId: string; ticketIds: string[] }> {
+  const { reserveSeats } = await import('../services/inventory.service.js');
+  const { createOrder } = await import('../services/order.service.js');
+  const { confirmPayment } = await import('../services/payment.service.js');
+  const { TicketModel } = await import('../models/ticket.model.js');
+  const auth = { userId, role: 'attendee' as const };
+  const hold = await reserveSeats(auth, { tierId, quantity });
+  const order = await createOrder(auth, {
+    holdIds: [hold.id],
+    ...(promoCode ? { promoCode } : {}),
+  });
+  await confirmPayment(order.id, {
+    paymentId: `pay_${order.id}`,
+    amountMinor: order.totalMinor,
+    source: 'webhook',
+  });
+  const tickets = await TicketModel.find({ orderId: order.id }).select('_id').lean();
+  return { orderId: order.id, ticketIds: tickets.map((t) => t._id.toString()) };
+}

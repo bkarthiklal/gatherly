@@ -87,10 +87,16 @@ const baseLimiterOptions = {
   skip: () => isTest,
 } as const;
 
-/** Broad ceiling applied to every route. */
+/**
+ * Broad per-IP ceiling. A single-page app makes many small requests, and a
+ * campus or demo room shares one IP, so it is generous; the sensitive routes
+ * have their own tighter limits. Check-in is exempt here and limited per
+ * steward instead — a busy door legitimately scans hundreds of tickets.
+ */
 export const globalRateLimit: RequestHandler = rateLimit({
   ...baseLimiterOptions,
-  limit: 100,
+  limit: 1000,
+  skip: (req) => isTest || /^\/api\/organiser\/events\/[^/]+\/check-in$/.test(req.path),
 });
 
 /**
@@ -129,5 +135,13 @@ export const purchaseRateLimit: RequestHandler = rateLimit({
   ...baseLimiterOptions,
   windowMs: 60 * 1000,
   limit: 30,
+  keyGenerator: (req) => req.auth?.userId ?? ipKeyGenerator(req.ip ?? ''),
+});
+
+/** Per steward. Roughly two scans a second, sustained, is more than any real door manages. */
+export const checkInRateLimit: RequestHandler = rateLimit({
+  ...baseLimiterOptions,
+  windowMs: 60 * 1000,
+  limit: 120,
   keyGenerator: (req) => req.auth?.userId ?? ipKeyGenerator(req.ip ?? ''),
 });

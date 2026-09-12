@@ -10,6 +10,7 @@ import type {
 import type { Request, RequestHandler } from 'express';
 import { getAuth } from '../middleware/auth.js';
 import { getValidatedQuery } from '../middleware/validate.js';
+import { auditFromRequest } from '../services/audit.service.js';
 import * as events from '../services/event.service.js';
 import { signBannerUpload } from '../services/upload.service.js';
 
@@ -43,15 +44,20 @@ export const update: RequestHandler = async (req, res) => {
 };
 
 export const submit: RequestHandler = async (req, res) => {
-  res.json(await events.submitEvent(getAuth(req), eventId(req)));
+  const result = await events.submitEvent(getAuth(req), eventId(req));
+  await auditFromRequest(req, 'event.submit', 'event', eventId(req));
+  res.json(result);
 };
 
 export const cancel: RequestHandler = async (req, res) => {
-  res.json(await events.cancelEvent(getAuth(req), eventId(req)));
+  const result = await events.cancelEvent(getAuth(req), eventId(req));
+  await auditFromRequest(req, 'event.cancel', 'event', eventId(req));
+  res.json(result);
 };
 
 export const remove: RequestHandler = async (req, res) => {
   await events.deleteEvent(getAuth(req), eventId(req));
+  await auditFromRequest(req, 'event.delete', 'event', eventId(req));
   res.status(204).end();
 };
 
@@ -86,11 +92,19 @@ export const listForReview: RequestHandler = async (req, res) => {
 };
 
 export const approve: RequestHandler = async (req, res) => {
-  res.json(await events.approveEvent(getAuth(req), eventId(req)));
+  const result = await events.approveEvent(getAuth(req), eventId(req));
+  await auditFromRequest(req, 'event.approve', 'event', eventId(req));
+  res.json(result);
 };
 
 export const reject: RequestHandler = async (req, res) => {
-  res.json(
-    await events.rejectEvent(getAuth(req), eventId(req), (req.body as RejectEventInput).reason),
+  const result = await events.rejectEvent(
+    getAuth(req),
+    eventId(req),
+    (req.body as RejectEventInput).reason,
   );
+  await auditFromRequest(req, 'event.reject', 'event', eventId(req), {
+    reason: (req.body as RejectEventInput).reason,
+  });
+  res.json(result);
 };

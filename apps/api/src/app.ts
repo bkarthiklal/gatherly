@@ -14,6 +14,11 @@ import { authRouter } from './routes/auth.routes.js';
 import { adminEventRouter, organiserRouter, publicEventRouter } from './routes/event.routes.js';
 import { healthRouter } from './routes/health.routes.js';
 import {
+  adminAuditRouter,
+  eventOpsRouter,
+  organiserOverviewRouter,
+} from './routes/organiser.routes.js';
+import {
   checkoutRouter,
   organiserOrderRouter,
   ticketRouter,
@@ -65,11 +70,14 @@ export function createApp(): Express {
   app.use('/api/events', publicEventRouter);
   app.use('/api/organiser/events/:eventId/promo-codes', promoRouter);
   app.use('/api/organiser/events/:eventId/orders', organiserOrderRouter);
+  app.use('/api/organiser/events/:eventId', eventOpsRouter);
+  app.use('/api/organiser', organiserOverviewRouter);
   app.use('/api/organiser', organiserRouter);
   app.use('/api/holds', holdRouter);
   app.use('/api/orders', checkoutRouter);
   app.use('/api/orders', orderRouter);
   app.use('/api/tickets', ticketRouter);
+  app.use('/api/admin', adminAuditRouter);
   app.use('/api/admin', adminEventRouter);
 
   app.use(notFoundHandler);

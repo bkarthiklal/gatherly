@@ -1,6 +1,7 @@
 import type { RefundOrderInput, VerifyPaymentInput } from '@gatherly/types';
 import type { Request, RequestHandler } from 'express';
 import { getAuth } from '../middleware/auth.js';
+import { auditFromRequest } from '../services/audit.service.js';
 import * as payments from '../services/payment.service.js';
 import * as refunds from '../services/refund.service.js';
 import * as tickets from '../services/ticket.service.js';
@@ -64,5 +65,9 @@ export const refundOrder: RequestHandler = async (req, res) => {
     req.params.orderId as string,
     (req.body as RefundOrderInput).reason,
   );
+  await auditFromRequest(req, 'order.refund', 'order', req.params.orderId as string, {
+    eventId: req.params.eventId,
+    reason: (req.body as RefundOrderInput).reason,
+  });
   res.status(202).json({ status: 'refund-requested' });
 };

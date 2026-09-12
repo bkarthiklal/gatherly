@@ -16,6 +16,7 @@ export interface DomainEvents {
   'order.paid': { orderId: string };
   'event.cancelled': { eventId: string };
   'refund.requested': { refundId: string };
+  'ticket.checked-in': { eventId: string; ticketId: string };
 }
 
 type Handler<K extends keyof DomainEvents> = (payload: DomainEvents[K]) => Promise<void> | void;

@@ -1,6 +1,7 @@
 import type { CreateHoldInput, CreateOrderInput, CreatePromoCodeInput } from '@gatherly/types';
 import type { RequestHandler } from 'express';
 import { getAuth } from '../middleware/auth.js';
+import { auditFromRequest } from '../services/audit.service.js';
 import * as inventory from '../services/inventory.service.js';
 import * as orders from '../services/order.service.js';
 import * as promos from '../services/promo.service.js';
@@ -39,15 +40,16 @@ export const cancelOrder: RequestHandler = async (req, res) => {
 };
 
 export const createPromo: RequestHandler = async (req, res) => {
-  res
-    .status(201)
-    .json(
-      await promos.createPromoCode(
-        getAuth(req),
-        req.params.eventId as string,
-        req.body as CreatePromoCodeInput,
-      ),
-    );
+  const promo = await promos.createPromoCode(
+    getAuth(req),
+    req.params.eventId as string,
+    req.body as CreatePromoCodeInput,
+  );
+  await auditFromRequest(req, 'promo.create', 'promo-code', promo.id, {
+    code: promo.code,
+    eventId: promo.eventId,
+  });
+  res.status(201).json(promo);
 };
 
 export const listPromos: RequestHandler = async (req, res) => {
@@ -55,12 +57,21 @@ export const listPromos: RequestHandler = async (req, res) => {
 };
 
 export const setPromoActive: RequestHandler = async (req, res) => {
-  res.json(
-    await promos.setPromoActive(
-      getAuth(req),
-      req.params.eventId as string,
-      req.params.promoId as string,
-      (req.body as { active: boolean }).active,
-    ),
+  const active = (req.body as { active: boolean }).active;
+  const promo = await promos.setPromoActive(
+    getAuth(req),
+    req.params.eventId as string,
+    req.params.promoId as string,
+    active,
   );
+  await auditFromRequest(
+    req,
+    active ? 'promo.activate' : 'promo.deactivate',
+    'promo-code',
+    promo.id,
+    {
+      code: promo.code,
+    },
+  );
+  res.json(promo);
 };

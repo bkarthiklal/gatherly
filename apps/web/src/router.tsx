@@ -6,6 +6,7 @@ import { BrowsePage } from './pages/BrowsePage';
 import { EventPage } from './pages/EventPage';
 import { HomePage } from './pages/HomePage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { RouteError } from './pages/RouteError';
 
 /**
  * Public pages ship in the main bundle. Everything behind sign-in is loaded
@@ -15,6 +16,7 @@ import { NotFoundPage } from './pages/NotFoundPage';
 export const router = createBrowserRouter([
   {
     element: <AppLayout />,
+    errorElement: <RouteError />,
     children: [
       { path: '/', element: <HomePage /> },
       { path: '/events', element: <BrowsePage /> },

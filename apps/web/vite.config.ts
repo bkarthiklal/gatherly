@@ -10,6 +10,18 @@ import { defineConfig } from 'vite';
  */
 export default defineConfig({
   plugins: [react({ compiler: true }), tailwindcss()],
+  // Pre-bundle libraries that are only reached through lazy routes. Otherwise
+  // the dev server discovers them on first visit, re-optimises, and the
+  // in-flight dynamic import fails.
+  optimizeDeps: {
+    include: [
+      '@zxing/browser',
+      'recharts',
+      'socket.io-client',
+      'react-hook-form',
+      '@hookform/resolvers/zod',
+    ],
+  },
   server: {
     port: 5173,
     strictPort: true,

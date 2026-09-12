@@ -23,3 +23,7 @@ apps/api/tmp/
 
 # Local development database files
 apps/api/.data/
+
+# Playwright output
+apps/web/test-results/
+apps/web/playwright-report/

@@ -55,4 +55,15 @@ export default tseslint.config(
       globals: globals.node,
     },
   },
+
+  // Plain JS helper scripts sit outside every tsconfig, so type-aware rules
+  // cannot run on them.
+  {
+    files: ['**/*.mjs', '**/*.cjs'],
+    ...tseslint.configs.disableTypeChecked,
+    languageOptions: {
+      ...tseslint.configs.disableTypeChecked.languageOptions,
+      globals: globals.node,
+    },
+  },
 );

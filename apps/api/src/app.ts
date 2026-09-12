@@ -3,6 +3,7 @@ import { pinoHttp } from 'pino-http';
 import { isProduction } from './config/env.js';
 import { logger } from './lib/logger.js';
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
+import { healthRouter } from './routes/health.routes.js';
 import {
   cookies,
   corsMiddleware,
@@ -23,6 +24,7 @@ import {
  *   json     — body must exist before it can be sanitised
  *   sanitise — operates on the parsed body
  *   logging  — positioned so throttled requests are still recorded
+ *   health   — before the limiter, so platform probes are never throttled
  *   limiter  — last gate before routes
  */
 export function createApp(): Express {
@@ -42,7 +44,8 @@ export function createApp(): Express {
   app.use(express.json({ limit: '100kb' }));
   app.use(express.urlencoded({ extended: false, limit: '100kb' }));
   app.use(sanitizeRequest);
-  app.use(pinoHttp({ logger }));
+  app.use(pinoHttp({ logger, autoLogging: { ignore: (req) => req.url === '/healthz' } }));
+  app.use(healthRouter);
   app.use(globalRateLimit);
 
   // Routes are mounted here.

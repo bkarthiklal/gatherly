@@ -20,3 +20,6 @@ pnpm-debug.log*
 
 # Generated ticket PDFs / QR assets during local dev
 apps/api/tmp/
+
+# Local development database files
+apps/api/.data/

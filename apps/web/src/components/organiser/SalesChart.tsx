@@ -34,7 +34,13 @@ export default function SalesChart({ data }: { data: EventAnalytics['salesByDay'
               name === 'tickets' ? [value, 'Tickets'] : [formatAmount(Number(value)), 'Revenue']
             }
           />
-          <Bar dataKey="tickets" fill="#4f46e5" radius={[4, 4, 0, 0]} maxBarSize={40} />
+          <Bar
+            dataKey="tickets"
+            fill="#4f46e5"
+            radius={[4, 4, 0, 0]}
+            maxBarSize={40}
+            isAnimationActive={false}
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>

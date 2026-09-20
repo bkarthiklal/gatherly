@@ -61,7 +61,7 @@ describe('POST /api/auth/register', () => {
     expect(res.body).toMatchObject({ error: { code: 'CONFLICT' } });
   });
 
-  it('rejects a password shorter than 12 characters', async () => {
+  it('rejects a password shorter than 15 characters', async () => {
     const res = await request(app)
       .post('/api/auth/register')
       .send({ name: 'Short', email: uniqueEmail(), password: 'short' })

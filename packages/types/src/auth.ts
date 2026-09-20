@@ -20,17 +20,18 @@ export const emailSchema = z
   .pipe(z.email('must be a valid email address').max(254)); // 254 = RFC 5321 ceiling
 
 /**
- * Length floor follows current NIST SP 800-63B guidance: length is the
- * control that matters, so we require 12 characters and deliberately do
- * NOT impose composition rules (one upper, one symbol, …), which push
- * users toward predictable patterns like "Password1!".
+ * Length floor follows NIST SP 800-63B Revision 4, which raised the minimum
+ * for a password used as the only authenticator from 8 to 15 characters, and
+ * which states that verifiers SHALL NOT impose composition rules (one upper,
+ * one symbol, …) — those push users toward predictable patterns like
+ * "Password1!" without adding real entropy.
  *
  * The upper bound exists because Argon2id hashes the full input — without
  * a cap, a multi-megabyte password becomes a cheap denial-of-service.
  */
 export const passwordSchema = z
   .string()
-  .min(12, 'must be at least 12 characters')
+  .min(15, 'must be at least 15 characters')
   .max(128, 'must be at most 128 characters');
 
 export const registerSchema = z.object({

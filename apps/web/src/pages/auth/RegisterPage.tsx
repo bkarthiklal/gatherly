@@ -106,7 +106,7 @@ export function RegisterPage() {
           <Field
             label="Password"
             error={errors.password?.message}
-            hint="At least 12 characters. A short phrase works well."
+            hint="At least 15 characters. A short phrase works well."
           >
             {(p) => (
               <Input type="password" autoComplete="new-password" {...p} {...register('password')} />

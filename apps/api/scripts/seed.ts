@@ -294,7 +294,7 @@ async function buy(
   return order;
 }
 
-const [ananya, karthik, zoya, vikram, nisha, dev] = attendees as [
+const [ananya, arjun, zoya, vikram, nisha, dev] = attendees as [
   (typeof attendees)[number],
   (typeof attendees)[number],
   (typeof attendees)[number],
@@ -303,19 +303,19 @@ const [ananya, karthik, zoya, vikram, nisha, dev] = attendees as [
   (typeof attendees)[number],
 ];
 await buy(ananya, 0, 0, 2);
-await buy(karthik, 0, 1, 4, 'INDIE20');
+await buy(arjun, 0, 1, 4, 'INDIE20');
 await buy(zoya, 0, 2, 2);
 await buy(vikram, 0, 1, 3);
 await buy(nisha, 1, 1, 2);
 await buy(dev, 1, 0, 1, 'STUDENT500');
 await buy(ananya, 1, 1, 1);
-await buy(karthik, 2, 0, 2);
+await buy(arjun, 2, 0, 2);
 await buy(zoya, 2, 0, 1);
 await buy(vikram, 3, 0, 2);
 await buy(nisha, 3, 0, 2);
 await buy(dev, 3, 0, 2);
 await buy(ananya, 4, 0, 3);
-await buy(karthik, 5, 0, 1);
+await buy(arjun, 5, 0, 1);
 
 // Pottery (event 3) is nearly sold out — 6 of 12 left — good for showing live availability.
 // A few people have already arrived at the book swap.
@@ -329,7 +329,7 @@ All passwords: ${PASSWORD}
   admin@gatherly.dev     admin
   meera@gatherly.dev     organiser (Indie Nights, 10K, Book Swap, Jazz)
   rahul@gatherly.dev     organiser (ReactConf, Pottery, Bootcamp, Pitch draft)
-  ananya@gatherly.dev    attendee with tickets (+ karthik, zoya, vikram, nisha, dev)
+  ananya@gatherly.dev    attendee with tickets (+ arjun, zoya, vikram, nisha, dev)
 
 Promo codes: INDIE20 (Indie Nights), STUDENT500 and SPEAKER (ReactConf)
 `);

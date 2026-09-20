@@ -28,11 +28,8 @@ apps/api/.data/
 apps/web/test-results/
 apps/web/playwright-report/
 
-# Planning, handoff and report working files - local only, never pushed
+# Local working files, never pushed
 plan/
 docs/
-ACTION_ITEMS.md
-HANDOFF.md
-BUILD_PLAN.md
-*CONVERSATION*.md
-KEYS.local.md
+.screenshots/
+*.local.md

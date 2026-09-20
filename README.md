@@ -5,9 +5,6 @@ rush of buyers can never be sold more seats than exist, tickets cannot be
 forged or reused at the door, and money is never kept for seats that were
 not delivered.
 
-
-
-
 ## What it does
 
 | Role          | Can                                                                                                                                                                                                        |

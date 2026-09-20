@@ -1,5 +1,6 @@
 /**
- * Oversell experiment — produces the before/after evidence for the report.
+ * Oversell experiment — produces before/after evidence that the
+ * locking strategy prevents overselling.
  *
  * Runs the same rush (N buyers, one seat each, against a tier of C seats)
  * through three implementations and records what each one allows:

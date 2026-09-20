@@ -3,14 +3,14 @@ import type { EventSummary, Paginated } from '@gatherly/types';
 import { apiGet, expect, test } from './fixtures';
 
 /**
- * Captures the figures for the report. Skipped in normal runs:
+ * Captures documentation screenshots. Skipped in normal runs:
  *   CAPTURE=1 pnpm --filter @gatherly/web e2e screenshots
- * Run against freshly seeded data. Writes to plan/docs/report/screenshots/.
+ * Run against freshly seeded data. Output dir overridable via SHOT_DIR.
  */
-const OUT = new URL('../../../plan/docs/report/screenshots/', import.meta.url).pathname;
+const OUT = new URL(process.env.SHOT_DIR ?? '../../../.screenshots/', import.meta.url).pathname;
 
-test.describe('report screenshots', () => {
-  test.skip(!process.env.CAPTURE, 'set CAPTURE=1 to capture report figures');
+test.describe('documentation screenshots', () => {
+  test.skip(!process.env.CAPTURE, 'set CAPTURE=1 to capture screenshots');
   test.use({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2 });
 
   test.beforeAll(() => {

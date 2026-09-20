@@ -2,7 +2,7 @@
   "name": "gatherly",
   "version": "0.1.0",
   "private": true,
-
+  "description": "Event ticketing platform for independent and community organisers",
   "engines": {
     "node": ">=24.0.0 <25"
   },

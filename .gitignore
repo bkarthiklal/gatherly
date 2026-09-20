@@ -27,3 +27,12 @@ apps/api/.data/
 # Playwright output
 apps/web/test-results/
 apps/web/playwright-report/
+
+# Planning, handoff and report working files - local only, never pushed
+plan/
+docs/
+ACTION_ITEMS.md
+HANDOFF.md
+BUILD_PLAN.md
+*CONVERSATION*.md
+KEYS.local.md

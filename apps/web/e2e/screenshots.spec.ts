@@ -5,9 +5,9 @@ import { apiGet, expect, test } from './fixtures';
 /**
  * Captures the figures for the report. Skipped in normal runs:
  *   CAPTURE=1 pnpm --filter @gatherly/web e2e screenshots
- * Run against freshly seeded data. Writes to docs/report/screenshots/.
+ * Run against freshly seeded data. Writes to plan/docs/report/screenshots/.
  */
-const OUT = new URL('../../../docs/report/screenshots/', import.meta.url).pathname;
+const OUT = new URL('../../../plan/docs/report/screenshots/', import.meta.url).pathname;
 
 test.describe('report screenshots', () => {
   test.skip(!process.env.CAPTURE, 'set CAPTURE=1 to capture report figures');
